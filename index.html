@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        :root {
+            --primary-color: #1a73e8;
+            --secondary-color: #34a853;
+            --bg-color: #f8f9fa;
+            --text-color: #202124;
+            --border-color: #dadce0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .form-section {
+            background: #f1f3f4;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input, select {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .vaccine-dates-container {
+            background: #fff;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        .vaccine-control-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f1f3f4;
+            gap: 15px;
+        }
+
+        .vaccine-control-row:last-child {
+            border-bottom: none;
+        }
+
+        .vaccine-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+
+        .vaccine-info input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .vaccine-control-row input[type="date"] {
+            width: 180px;
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+            margin-bottom: 30px;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-print {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 2px;
+        }
+
+        .preview-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 9999;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .modal-header-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #dadce0;
+        }
+
+        .btn-modal-print {
+            background-color: #34a853;
+            color: white; padding: 10px 25px; border: none; border-radius: 4px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+        }
+
+        .btn-modal-close {
+            background-color: #ea4335;
+            color: white; padding: 10px 25px; border: none; border-radius: 4px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+        }
+
+        .print-page-box {
+            border: 1px solid #000;
+            padding: 40px;
+            margin-bottom: 30px;
+            background: #fff;
+            box-sizing: border-box;
+            min-height: 297mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .print-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .header-meta {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .print-header h2 { margin: 15px 0 5px 0; font-size: 24px; color: #000; text-align: center; }
+
+        .narrative-text {
+            font-size: 16px;
+            line-height: 2.2;
+            text-align: justify;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .vaccine-bullets {
+            margin: 15px 40px;
+            font-size: 15px;
+            line-height: 2.0;
+            color: #000;
+            flex-grow: 1;
+        }
+
+        .signatures-grid {
+            margin-top: 40px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .signatures-grid div { text-align: center; color: #000; }
+        .signature-title { font-weight: bold; text-decoration: underline; margin-bottom: 5px; }
+
+        .input-line {
+            display: inline-block;
+            border-bottom: 1px dashed #000;
+            padding: 0 5px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .auto-detected-badge {
+            background-color: #e8f0fe;
+            color: #1a73e8;
+            padding: 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-top: 5px;
+            font-size: 14px;
+            text-align: center;
+            border: 1px solid #1a73e8;
+        }
+
+        @media print {
+            @page { size: A4; margin: 0mm !important; }
+            html, body { background: #fff !important; margin: 0 !important; padding: 0 !important; }
+            #appContainer, .modal-header-buttons { display: none !important; }
+            .preview-modal { position: static !important; display: block !important; background: none !important; padding: 0 !important; overflow: visible !important; }
+            .modal-content { max-width: 100% !important; padding: 0 !important; box-shadow: none !important; background: transparent !important; }
+            #printableAreaForSystem { display: block !important; }
+            .print-page-box { display: flex !important; flex-direction: column !important; justify-content: space-between !important; page-break-inside: avoid !important; page-break-after: always !important; height: 297mm !important; padding: 20mm !important; margin: 0 !important; border: none !important; box-sizing: border-box !important; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="appContainer" class="container">
+    <h1>برنامج طباعة شهادات وإقرارات التطعيم المطور</h1>
+    
+    <div class="form-section">
+        <h2>اختر الإدارة الصحية والقيادات</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="healthAdminSelect">الإدارة الصحية:</label>
+                <select id="healthAdminSelect">
+                    <option value="الإدارة الصحية ببنها">الإدارة الصحية ببنها</option>
+                    <option value="الإدارة الصحية بقليوب">الإدارة الصحية بقليوب</option>
+                    <option value="الإدارة الصحية بشبرا شرق">الإدارة الصحية بشبرا شرق</option>
+                    <option value="الإدارة الصحية بشبرا غرب">الإدارة الصحية بشبرا غرب</option>
+                    <option value="الإدارة الصحية بطوخ">الإدارة الصحية بطوخ</option>
+                    <option value="الإدارة الصحية بقها">الإدارة الصحية بقها</option>
+                    <option value="الإدارة الصحية بكفر شكر">الإدارة الصحية بكفر شكر</option>
+                    <option value="الإدارة الصحية بشبين القناطر">الإدارة الصحية بشبين القناطر</option>
+                    <option value="الإدارة الصحية بالخانكة">الإدارة الصحية بالخانكة</option>
+                    <option value="الإدارة الصحية بالقناطر الخيرية">الإدارة الصحية بالقناطر الخيرية</option>
+                    <option value="الإدارة الصحية بالعبور">الإدارة الصحية بالعبور</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="adminManager">مدير الإدارة الصحية:</label>
+                <input type="text" id="adminManager" value="د. بكري سعيد">
+            </div>
+            <div class="form-group">
+                <label for="preventiveManager">مدير الطب الوقائي:</label>
+                <input type="text" id="preventiveManager" value="د. داليا محمود">
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>بيانات صاحب الشهادة والسن واللغة</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="fullNameAr">اسم صاحب الشهادة باللغة العربية (أساسي):</label>
+                <input type="text" id="fullNameAr" placeholder="مثال: أحمد محمد علي" required>
+            </div>
+            <div class="form-group">
+                <label for="fullNameEn">الاسم باللغة الإنجليزية (اختياري):</label>
+                <input type="text" id="fullNameEn" placeholder="مثال: AHMED MOHAMED ALI">
+            </div>
+            <div class="form-group">
+                <label for="nationalId">الرقم القومي:</label>
+                <input type="text" id="nationalId" maxlength="14" placeholder="14 رقم">
+            </div>
+            <div class="form-group">
+                <label for="birthDate">تاريخ الميلاد:</label>
+                <input type="date" id="birthDate" onchange="processBirthDateChange()" required>
+            </div>
+            <div class="form-group">
+                <label for="gender">الجنس:</label>
+                <select id="gender">
+                    <option value="الطفلة">أنثى (الطفلة)</option>
+                    <option value="الطفل">ذكر (الطفل)</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>بيانات الإقرار وفترة الجدول التاريخي الذكي</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="guardianName">اسم ولي الأمر المقر (يترك فارغاً إذا كان صاحب الشهادة نفسه):</label>
+                <input type="text" id="guardianName" placeholder="اسم ولي الأمر بالكامل">
+            </div>
+            <div class="form-group">
+                <label for="relation">صلة القرابة / صفة المقر:</label>
+                <select id="relation">
+                    <option value="الأب">الأب</option>
+                    <option value="الأم">الأم</option>
+                    <option value="صاحب الشهادة نفسه">صاحب الشهادة نفسه</option>
+                    <option value="العم">العم</option>
+                    <option value="العمة">العمة</option>
+                    <option value="الخال">الخال</option>
+                    <option value="الخالة">الخالة</option>
+                    <option value="الجد">الجد</option>
+                    <option value="الجدة">الجدة</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="childAge">السن الحالي (نصياً):</label>
+                <input type="text" id="childAge" placeholder="يُحسب تلقائياً">
+            </div>
+            <div class="form-group">
+                <label>الفترة الزمنية المكتشفة تلقائياً:</label>
+                <div id="detectedPeriodBadge" class="auto-detected-badge">يرجى تحديد تاريخ الميلاد أولاً</div>
+                <input type="hidden" id="targetAgeCategory" value="">
+            </div>
+        </div>
+
+        <div class="vaccine-dates-container">
+            <h3>مخطط الطعوم التاريخي للفترة المكتشفة</h3>
+            <div id="dynamicVaccineRows"></div>
+        </div>
+
+        <button type="button" class="btn" id="saveBtn" onclick="addRecord()">حفظ ومزامنة البيانات مع جوجل شيت</button>
+    </div>
+
+    <!-- لوحة الحجوزات الواردة من الجمهور -->
+    <div class="dashboard" style="border-top: 4px solid #e37400; padding-top: 15px;">
+        <h2 style="color: #e37400;">🗓️ طلبات الحجز المسبق الواردة من الجمهور البوابة الخارجية</h2>
+        <table style="border: 1px solid #f2994a;">
+            <thead>
+                <tr style="background-color: #e37400;">
+                    <th>اسم المواطن</th>
+                    <th>تاريخ الميلاد</th>
+                    <th>موعد المراجعة المختار</th>
+                    <th>رقم الهاتف</th>
+                    <th>إجراء نقل البيانات التلقائي</th>
+                </tr>
+            </thead>
+            <tbody id="bookingsTable">
+                <tr><td colspan="5">جاري استدعاء الحجوزات الجديدة...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="dashboard">
+        <h2>لوحة التحكم والأرشيف التاريخي المستدعى</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>الإدارة الصحية</th>
+                    <th>الاسم العربي</th>
+                    <th>تاريخ الميلاد</th>
+                    <th>الفترة الزمنية</th>
+                    <th>المسئول</th>
+                    <th>إجراءات المعاينة والطباعة</th>
+                </tr>
+            </thead>
+            <tbody id="recordsTable"></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="previewModal" class="preview-modal">
+    <div class="modal-content">
+        <div class="modal-header-buttons">
+            <button class="btn-modal-print" onclick="executeSystemPrint()">🖨️ بدء الطباعة الفورية أو الحفظ كـ PDF</button>
+            <button class="btn-modal-close" onclick="closePreviewModal()">❌ إغلاق المعاينة والعودة للبرنامج</button>
+        </div>
+
+        <div id="printableAreaForSystem">
+            <!-- الورقة الأولى: الشهادة الرسمية -->
+            <div class="print-page-box" id="page1Box" style="direction: ltr;">
+                <div id="certificateDynamicContent"></div>
+            </div>
+
+            <!-- الورقة الثانية: نموذج الإقرار العربي -->
+            <div class="print-page-box" id="page2Box" style="direction: rtl;">
+                <div>
+                    <div class="print-header">
+                        <div class="header-meta" style="text-align: right;" id="p2HeaderRight">
+                            الإدارة الصحية ببنها<br>
+                            قسم الطب الوقائي<br>
+                            قسم التطعيمات
+                        </div>
+                        <h2>إقــــــــرار رسمي بصحة البيانات</h2>
+                        <div class="header-meta" style="text-align: left; direction: ltr;" id="p2HeaderLeft">
+                            Banha Health Administration<br>
+                            Preventive Department
+                        </div>
+                    </div>
+                    <div class="narrative-text" style="font-size: 19px; line-height: 2.6; margin-top: 30px; text-align: right;">
+                        بعد مراجعة الاسم وتاريخ الميلاد المقيد رسمياً بالسجلات، أقر أنا / <span id="lbl_guardian" class="input-line"></span> بصفتي (<span id="lbl_relation" class="input-line"></span>) <span id="lbl_gender_txt2" class="input-line"></span> / <span id="lbl_name2" class="input-line" style="color: red;"></span> بأن بيانات صاحب الشهادة الموضحة عاليها صحيحة تماماً وأنه قد تلقى التطعيمات كاملة من واقع السجلات الرسمية، وهذا إقرار مني بذلك.
+                    </div>
+                    
+                    <div style="margin-top: 60px; font-size: 16px; font-weight: bold; line-height: 2.8; float: right; width: 55%; text-align: right;">
+                        المقر بما فيه: ............................................<br>
+                        التوقيع اليدوي: ............................................................<br>
+                        الرقم القومي: ........................................................<br>
+                        رقم الموبايل: .......................................................
+                    </div>
+                    <div style="margin-top: 60px; font-size: 16px; font-weight: bold; text-align: center; float: left; width: 40%;">
+                        اعتماد قسم الطب الوقائي<br><br>
+                        د. نشوى الجزار<br>
+                        ..........................................
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>
+                <div style="font-size: 11px; text-align: center; color: #666; margin-top: 30px; direction: rtl;" id="p2FooterTitle">
+                    قطاع الطب الوقائي - نظام الإقرارات والشهادات المطور رقمياً
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const vaccineHistoricalDatabase = {
+        "p2021": { label: "مواليد 2021 حتى اليوم", en: ["Hepatitis B (Birth Dose)", "Polio", "BCG", "1st DPT, Polio,  Hemophilus influenza,Hepatitis B,I P V (Salk)", "2nd DPT, Polio, Hemophilus influenza,Hepatitis B,I P V (Salk)", "3rd DPT, Polio,  Hemophilus influenza,Hepatitis B,I P V (Salk)", "Polio", "MMR, Polio", "DPT, Polio, MMR (Booster Dose)"], 
+        ar: ["التهاب كبدي B (جرعة الميلاد)", "شلل الأطفال \"سابين\"", "الدرن", " شلل أطفال \"سولك\"+التهاب كبدي B+ثلاثي بكتيري (DTP) +الانفلونزا البكتيرية  + شلل أطفال\"سابين\"(جرعة أولى)", "شلل أطفال \"سولك\"+التهاب كبدي B+الانفلونزا البكتيرية+ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثانية)", " شلل أطفال \"سولك\"+التهاب كبدي B+الانفلونزا البكتيرية+ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثالثة)", "شلل الأطفال \"سابين\"", "ثلاثي فيروسي (MMR) + شلل الأطفال \"سابين\"", "ثلاثي بكتيري (DTP) + ثلاثي فيروسي (MMR) + شلل الأطفال \"سابين\""] },
+        "p2016_2020": { label: "مواليد 2016 حتى 2020", en: ["Hepatitis B (Birth Dose)", "Polio", "BCG", "1st DPT, Polio,  Hemophilus influenza,Hepatitis B", "2nd DPT, Polio, Hemophilus influenza,Hepatitis B", "3rd DPT, Polio,  Hemophilus influenza,Hepatitis B", "I P V (Salk)", "Polio", "MMR, Polio", "DPT, Polio, MMR (Booster Dose)"],
+         ar: ["التهاب كبدي B (جرعة الميلاد)", "شلل الأطفال \"سابين\"", "الدرن", "التهاب كبدي B+ثلاثي بكتيري (DTP) +الانفلونزا البكتيرية  + شلل أطفال\"سابين\"(جرعة أولى)", "التهاب كبدي B+الانفلونزا البكتيرية+ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثانية)", "التهاب كبدي B+الانفلونزا البكتيرية+ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثالثة)",   "شلل أطفال \"سولك\"", "شلل الأطفال \"سابين\"", "ثلاثي فيروسي (MMR) + شلل الأطفال \"سابين\"", "ثلاثي بكتيري (DTP) + ثلاثي فيروسي (MMR) + شلل الأطفال \"سابين\""] },
+        "p2014_2015": { label: "مواليد 2014 حتى 2015", en: [ "Polio", "BCG", "1st DPT, Polio,  Hemophilus influenza,Hepatitis B", "2nd DPT, Polio, Hemophilus influenza,Hepatitis B", "3rd DPT, Polio,  Hemophilus influenza,Hepatitis B",  "Polio", "MMR, Polio", "DPT, Polio, MMR (Booster Dose)"],
+         ar: ["شلل الأطفال \"سابين\"", "الدرن", "التهاب كبدي B+ثلاثي بكتيري (DTP) +الانفلونزا البكتيرية  + شلل أطفال\"سابين\"(جرعة أولى)", "التهاب كبدي B+الانفلونزا البكتيرية+ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثانية)", "التهاب كبدي B+الانفلونزا البكتيرية+ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثالثة)", "شلل الأطفال \"سابين\"", "ثلاثي فيروسي (MMR) + شلل الأطفال \"سابين\"", "ثلاثي بكتيري (DTP) + ثلاثي فيروسي (MMR) + شلل الأطفال \"سابين\""] },
+        "p2009_2013": { label: "مواليد 2009 حتى 2013", en: [ "Polio", "BCG", "1st DPT, Polio,Hepatitis B", "2nd DPT, Polio, Hepatitis B", "3rd DPT, Polio, Hepatitis B", "Polio", "MMR, Polio", "DPT, Polio, MMR (Booster Dose)"],
+         ar: ["شلل الأطفال \"سابين\"", "الدرن", "التهاب كبدي B+ثلاثي بكتيري (DTP)  + شلل أطفال\"سابين\"(جرعة أولى)", "التهاب كبدي B+ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثانية)", "التهاب كبدي B+ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثالثة)",  "شلل الأطفال \"سابين\"", "ثلاثي فيروسي (MMR) + شلل الأطفال \"سابين\"", "ثلاثي بكتيري (DTP) + ثلاثي فيروسي (MMR) + شلل الأطفال \"سابين\""] },
+        "p1998_2008": { label: "مواليد 1998 حتى 2008", en: [ "Polio", "BCG", "1st DPT, Polio,Hepatitis B", "2nd DPT, Polio, Hepatitis B", "3rd DPT, Polio, Hepatitis B", "Measles, Polio"," Polio" , "MMR","DPT, Polio (Booster Dose)"], 
+        ar: ["شلل الأطفال \"سابين\"", "الدرن", "التهاب كبدي B+ثلاثي بكتيري (DTP)  + شلل أطفال\"سابين\"(جرعة أولى)", "التهاب كبدي B+ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثانية)", "التهاب كبدي B+ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثالثة)", "حصبة + شلل الأطفال \"سابين\""," شلل الأطفال \"سابين\"", "ثلاثي فيروسي (MMR)" , "ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\""] },
+        "p1992_1997": { label: "مواليد 1992 حتى 1997", en: ["BCG", "1st DPT, Polio", "2nd DPT, Polio", "3rd DPT, Polio", "1st Hepatitis B", "2nd Hepatitis B", "3rd Hepatitis B", "Measles, Polio", "DPT, Polio (Booster Dose)"], ar: ["الدرن", "ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة أولى)", "ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثانية)", "ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثالثة)", "التهاب كبدي B (جرعة أولى)", "التهاب كبدي B (جرعة ثانية)", "التهاب كبدي B (جرعة ثالثة)", "حصبة + شلل الأطفال \"سابين\"", "ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\""] },
+        "p1980_1991": { label: "مواليد 1980 حتى 1991", en: ["BCG", "1st DPT, Polio", "2nd DPT, Polio", "3rd DPT, Polio", "Measles, Polio", "DPT, Polio, (Booster Dose)"], ar: ["الدرن", "ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة أولى)", "ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثانية)", "ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثالثة)", "حصبة + شلل الأطفال \"سابين\"", "ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\""] },
+        "p1977_1979": { label: "مواليد 1977 حتى 1979", en: ["Smallpox", "BCG", "1st DPT, Polio", "2nd DPT, Polio", "3rd DPT, Polio", "Measles, Polio"], ar: ["الجدري", "الدرن", "ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة أولى)", "ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثانية)", "ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثالثة)", "حصبة + شلل الأطفال \"سابين\""] },
+        "p1968_1976": { label: "مواليد 1968 حتى 1976", en: ["Smallpox", "BCG", "1st DPT, Polio", "2nd DPT, Polio", "3rd DPT, Polio"], ar: ["الجدري", "الدرن", "ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة أولى)", "ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثانية)", "ثلاثي بكتيري (DTP) + شلل الأطفال \"سابين\"(جرعة ثالثة)"] },
+        "pre1968": { label: "مواليد ما قبل 1968", en: ["Smallpox", "BCG", "1st Diphtheria", "2nd Diphtheria", "3rd Diphtheria"], ar: ["الجدري", "الدرن", "الدفتريا (جرعة أولى)", "الدفتريا (جرعة ثانية)", "الدفتريا (جرعة ثالثة)"] }
+    };
+
+    let records = [];
+    let globalBookings = [];
+
+    // خريطة أسماء الإدارات باللغة الإنجليزية للشهادات
+    const adminEnMap = {
+        "الإدارة الصحية ببنها": "Banha Health Administration",
+        "الإدارة الصحية بقليوب": "Qalyub Health Administration",
+        "الإدارة الصحية بشبرا شرق": "East Shubra Health Administration",
+        "الإدارة الصحية بشبرا غرب": "West Shubra Health Administration",
+        "الإدارة الصحية بطوخ": "Toukh Health Administration",
+        "الإدارة الصحية بقها": "Qaha Health Administration",
+        "الإدارة الصحية بكفر شكر": "Kafr Shukr Health Administration",
+        "الإدارة الصحية بشبين القناطر": "Shibin El Qanater Health Administration",
+        "الإدارة الصحية بالخانكة": "Khanka Health Administration",
+        "الإدارة الصحية بالقناطر الخيرية": "Qanater الخيرية Health Administration",
+        "الإدارة الصحية بالعبور": "Obour Health Administration"
+    };
+
+    function formatDateToDMY(dateValue) {
+        if (!dateValue) return "";
+        const parts = dateValue.split("-");
+        if (parts.length === 3) return `${parts[2]} / ${parts[1]} / ${parts[0]}`;
+        return dateValue;
+    }
+
+    function parseDMYToInputDate(dmyStr) {
+        if(!dmyStr) return "";
+        const parts = dmyStr.split(" / ");
+        if(parts.length === 3) return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        return "";
+    }
+
+    function processBirthDateChange() {
+        const dateInput = document.getElementById('birthDate').value;
+        if (!dateInput) return;
+        
+        const birthDate = new Date(dateInput);
+        const year = birthDate.getFullYear();
+        let periodKey = "p2021"; 
+        
+        if (year >= 2021) { periodKey = "p2021"; }
+        else if (year >= 2016 && year <= 2020) { periodKey = "p2016_2020"; } 
+        else if (year >= 2014 && year <= 2015) { periodKey = "p2014_2015"; }
+        else if (year >= 2009 && year <= 2013) { periodKey = "p2009_2013"; }
+        else if (year >= 1998 && year <= 2008) { periodKey = "p1998_2008"; }
+        else if (year >= 1992 && year <= 1997) { periodKey = "p1992_1997"; }
+        else if (year >= 1980 && year <= 1991) { periodKey = "p1980_1991"; }
+        else if (year >= 1977 && year <= 1979) { periodKey = "p1977_1979"; }
+        else if (year >= 1968 && year <= 1978) { periodKey = "p1968_1978"; }
+        else if (year < 1968) { periodKey = "pre1968"; }
+        
+        document.getElementById('targetAgeCategory').value = periodKey;
+        document.getElementById('detectedPeriodBadge').innerText = "📌 تم تحديد: " + vaccineHistoricalDatabase[periodKey].label;
+        
+        autoCalculateAgeTextOnly(birthDate);
+        renderVaccineDateInputs(periodKey);
+    }
+
+    function renderVaccineDateInputs(periodKey) {
+        const targetListEn = vaccineHistoricalDatabase[periodKey].en;
+        const targetListAr = vaccineHistoricalDatabase[periodKey].ar;
+        const container = document.getElementById('dynamicVaccineRows');
+        container.innerHTML = '';
+        
+        targetListEn.forEach((vNameEn, idx) => {
+            container.innerHTML += `
+                <div class="vaccine-control-row">
+                    <div class="vaccine-info">
+                        <input type="checkbox" id="chk_${idx}" checked>
+                        <label for="chk_${idx}"><strong>${vNameEn}</strong> <span style="color:#666; font-size:13px;">(${targetListAr[idx]})</span></label>
+                    </div>
+                    <input type="date" class="vaccine-date-input" id="date_${idx}">
+                </div>
+            `;
+        });
+    }
+
+    function autoCalculateAgeTextOnly(birthDate) {
+        const today = new Date();
+        let years = today.getFullYear() - birthDate.getFullYear();
+        let months = today.getMonth() - birthDate.getMonth();
+        if (months < 0 || (months === 0 && today.getDate() < birthDate.getDate())) { years--; months += 12; }
+        let ageStr = "";
+        if (years > 0) ageStr += years + " سنة ";
+        if (months > 0) ageStr += "و " + months + " شهور";
+        document.getElementById('childAge').value = ageStr || "أيام أو أسابيع";
+    }
+
+    window.onload = function() {
+        // استدعاء الأرشيف المحفوظ
+        google.script.run.withSuccessHandler(function(data) {
+            records = data;
+            updateTable();
+        }).loadRecordsFromSheets();
+
+        // استدعاء الحجوزات الواردة من الجمهور
+        google.script.run.withSuccessHandler(function(bookings) {
+            globalBookings = bookings;
+            updateBookingsTable();
+        }).loadBookingsForAdmin();
+    };
+
+    function updateBookingsTable() {
+        const tbody = document.getElementById('bookingsTable');
+        if(!globalBookings || globalBookings.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5">لا توجد طلبات حجز مسبق قيد الانتظار حالياً.</td></tr>';
+            return;
+        }
+        tbody.innerHTML = '';
+        globalBookings.forEach((book, bIdx) => {
+            tbody.innerHTML += `
+                <tr style="background-color: #fffaf5;">
+                    <td><strong style="color: #e37400;">${book.nameAr}</strong></td>
+                    <td>${book.bDate}</td>
+                    <td><code>${book.bookingDate}</code></td>
+                    <td>${book.phone}</td>
+                    <td>
+                        <button class="btn-print" style="background-color: #e37400;" onclick="injectBookingToForm(${bIdx})">📥 سحب البيانات للنموذج وفحص الطعوم</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function injectBookingToForm(idx) {
+        const book = globalBookings[idx];
+        document.getElementById('fullNameAr').value = book.nameAr;
+        document.getElementById('fullNameEn').value = book.nameEn || '';
+        document.getElementById('nationalId').value = book.nationalId === 'غير مدرج' ? '' : book.nationalId;
+        document.getElementById('gender').value = book.gender;
+        
+        const standardDate = parseDMYToInputDate(book.bDate);
+        if(standardDate) {
+            document.getElementById('birthDate').value = standardDate;
+            processBirthDateChange();
+        }
+        alert('تم نقل بيانات المواطن ' + book.nameAr + ' تلقائياً إلى حقول الإدخال، يمكنك مراجعة حقول التطعيم وحفظها وطباعتها الآن.');
+    }
+
+    function addRecord() {
+        const nameArEl = document.getElementById('fullNameAr');
+        const bDateEl = document.getElementById('birthDate');
+        const periodKey = document.getElementById('targetAgeCategory').value;
+        
+        if (!nameArEl.value || !bDateEl.value || !periodKey) { alert('الرجاء إدخال الاسم العربي وتاريخ الميلاد'); return; }
+
+        document.getElementById('saveBtn').innerText = "جاري الحفظ والمزامنة السحابية...";
+        document.getElementById('saveBtn').disabled = true;
+
+        const recordData = {
+            healthAdmin: document.getElementById('healthAdminSelect').value,
+            adminManager: document.getElementById('adminManager').value,
+            preventiveManager: document.getElementById('preventiveManager').value,
+            nameAr: nameArEl.value,
+            nameEn: document.getElementById('fullNameEn').value || '',
+            bDate: formatDateToDMY(bDateEl.value),
+            ageText: document.getElementById('childAge').value,
+            nationalId: document.getElementById('nationalId').value,
+            guardian: document.getElementById('guardianName').value || '',
+            relation: document.getElementById('relation').value,
+            gender: document.getElementById('gender').value,
+            vaccineKey: periodKey,
+            selectedVaccinesIndices: [],
+            customDates: {}
+        };
+
+        const targetListLength = vaccineHistoricalDatabase[periodKey].en.length;
+        for (let i = 0; i < targetListLength; i++) {
+            const chk = document.getElementById(`chk_${i}`);
+            if (chk && chk.checked) {
+                recordData.selectedVaccinesIndices.push(i);
+                recordData.customDates[i] = formatDateToDMY(document.getElementById(`date_${i}`).value);
+            }
+        }
+
+        google.script.run.withSuccessHandler(function(response) {
+            document.getElementById('saveBtn').innerText = "حفظ ومزامنة البيانات مع جوجل شيت";
+            document.getElementById('saveBtn').disabled = false;
+            
+            records.push(recordData);
+            updateTable();
+            
+            nameArEl.value = '';
+            document.getElementById('fullNameEn').value = '';
+            bDateEl.value = '';
+            document.getElementById('guardianName').value = '';
+            document.getElementById('detectedPeriodBadge').innerText = "يرجى تحديد تاريخ الميلاد أولاً";
+            document.getElementById('dynamicVaccineRows').innerHTML = '';
+        }).saveRecordToSheets(recordData);
+    }
+
+    function updateTable() {
+        const tbody = document.getElementById('recordsTable');
+        tbody.innerHTML = '';
+        records.forEach((rec, index) => {
+            const labelText = vaccineHistoricalDatabase[rec.vaccineKey] ? vaccineHistoricalDatabase[rec.vaccineKey].label : rec.vaccineKey;
+            const currentAdmin = rec.healthAdmin || "الإدارة الصحية ببنها";
+            tbody.innerHTML += `
+                <tr>
+                    <td><span style="color:#d93025; font-weight:bold;">${currentAdmin}</span></td>
+                    <td><strong>${rec.nameAr}</strong></td>
+                    <td>${rec.bDate}</td>
+                    <td><span style="color:#1a73e8;font-weight:bold;">${labelText}</span></td>
+                    <td>د. نشوى Al-Gazzar</td>
+                    <td>
+                        <button class="btn-print" onclick="openPreviewModal(${index}, 'ar')">👁️ شهادة عربي + إقرار</button>
+                        <button class="btn-print" style="background-color:#1a73e8;" onclick="openPreviewModal(${index}, 'en')">👁️ شهادة إنجليزي + إقرار</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    function openPreviewModal(index, lang) {
+        const rec = records[index];
+        const certBox = document.getElementById('page1Box');
+        const container = document.getElementById('certificateDynamicContent');
+        container.innerHTML = '';
+
+        const currentAdmin = rec.healthAdmin || "الإدارة الصحية ببنها";
+        const currentAdminEn = adminEnMap[currentAdmin] || "Banha Health Administration";
+        const currentAdminManager = rec.adminManager || "د. بكري سعيد";
+        const currentPreventiveManager = rec.preventiveManager || "د. داليا محمود";
+
+        let subjectPronoun = "her"; let possessivePronoun = "her";
+        if (rec.gender === "الطفل") { subjectPronoun = "him"; possessivePronoun = "his"; }
+
+        let reviewDateFormatted = ".. / .. / ...."; 
+
+        if (lang === 'en') {
+            certBox.style.direction = 'ltr';
+            let displayNameEn = rec.nameEn ? rec.nameEn.toUpperCase() : rec.nameAr;
+            
+            let bulletContent = '';
+            const fullListEn = vaccineHistoricalDatabase[rec.vaccineKey].en;
+            rec.selectedVaccinesIndices.forEach((idx) => {
+                let dateStr = rec.customDates[idx] ? ` &nbsp;&nbsp;(Date: ${rec.customDates[idx]})` : "";
+                bulletContent += `<div style="margin-bottom: 8px;">• ${fullListEn[idx]} ${dateStr}</div>`;
+            });
+
+            container.innerHTML = `
+                <div>
+                    <div class="print-header">
+                        <div class="header-meta" style="text-align: left;">${currentAdminEn}<br>Preventive Medicine Department<br>Vaccination sector</div>
+                        <div style="text-align: center;"><span style="font-weight: bold; font-size: 16px;">وزارة الصحة والسكان</span><br><span style="font-size: 12px; color: #555;">Preventive Sector</span></div>
+                        <div class="header-meta" style="text-align: right; direction: rtl;">${currentAdmin}<br>قسم الطب الوقائي<br>قسم التطعيمات</div>
+                    </div>
+                    <h2 style="text-align: center; font-family: 'Times New Roman', serif; font-weight: bold; margin-bottom: 5px;">Vaccination Certificate</h2>
+                    <div style="text-align: center; margin-bottom: 25px;">----------------------------------</div>
+                    <div class="narrative-text" style="font-family: 'Times New Roman', serif; font-size: 17px; line-height: 2;">
+                        The Ministry of Health and population certifies that <span class="input-line" style="color: red;">${displayNameEn}</span>. Date of Birth: <span class="input-line" style="color: red;">${rec.bDate}</span> has been vaccinated with the following vaccines:
+                    </div>
+                    <div class="vaccine-bullets" style="font-family: 'Times New Roman', serif; font-size: 16px;">${bulletContent}</div>
+                    <div class="narrative-text" style="font-style: italic; font-size: 14px; margin-top: 25px; line-height: 1.6;">
+                        Note:<br>This Vaccination certificate was issued for <span style="color:red; font-weight:bold;">${subjectPronoun}</span> upon <span style="color:red; font-weight:bold;">${possessivePronoun}</span> request and without any responsibility of the Preventive Affairs.<br>
+                        <div style="text-align: center; margin-top: 10px; font-style: normal; font-weight: bold;">This certificate is issued to whom it may concern.</div>
+                    </div>
+                    <div style="margin-top: 15px; font-weight: bold; font-size: 14px;">Revised: <span style="color: red;">${reviewDateFormatted}</span></div>
+                </div>
+                <div class="signatures-grid" style="font-family: 'Times New Roman', serif;">
+                    <div><div class="signature-title">Vaccines Officer</div><div>Dr. Nashwa Al-Gazzar</div></div>
+                    <div><div class="signature-title">Director of Preventive Affairs Department</div><div>${currentPreventiveManager}</div></div>
+                    <div><div class="signature-title">Health Administration Manager</div><div>${currentAdminManager}</div></div>
+                </div>
+            `;
+        } else {
+            certBox.style.direction = 'rtl';
+            
+            let bulletContent = '';
+            const fullListAr = vaccineHistoricalDatabase[rec.vaccineKey].ar;
+            rec.selectedVaccinesIndices.forEach((idx) => {
+                let dateStr = rec.customDates[idx] ? ` &nbsp;&nbsp;(بتاريخ: ${rec.customDates[idx]})` : "";
+                bulletContent += `<div style="margin-bottom: 8px;">• ${fullListAr[idx]} ${dateStr}</div>`;
+            });
+
+            container.innerHTML = `
+                <div>
+                    <div class="print-header">
+                        <div class="header-meta" style="text-align: right;">${currentAdmin}<br>قسم الطب الوقائي<br>قسم التطعيمات</div>
+                        <div style="text-align: center;"><span style="font-weight: bold; font-size: 18px;">وزارة الصحة والسكان</span><br><span style="font-size: 14px; color: #333;">قطاع الطب الوقائي</span></div>
+                        <div class="header-meta" style="text-align: left; direction: ltr;">${currentAdminEn}<br>Preventive Department</div>
+                    </div>
+                    <h2 style="text-align: center; font-weight: bold; margin-bottom: 5px;">شهادة تطعيم رسمية</h2>
+                    <div style="text-align: center; margin-bottom: 25px;">----------------------------------</div>
+                    <div class="narrative-text" style="font-size: 18px; line-height: 2.4;">
+                        تشهد وزارة الصحة والسكان (<span style="color:#1a73e8;">${currentAdmin}</span>) بأن <span class="input-line" style="color: red;">${rec.nameAr}</span>، تاريخ الميلاد: <span class="input-line" style="color: red;">${rec.bDate}</span>، قد تلقى التطعيمات المقررة فئوياً والمستحقة له رسمياً وهي كالتالي:
+                    </div>
+                    <div class="vaccine-bullets" style="font-size: 16px; direction: rtl; text-align: right;">${bulletContent}</div>
+                    <div class="narrative-text" style="font-style: italic; font-size: 14px; margin-top: 25px; line-height: 1.6;">
+                        ملحوظة:<br>بناءً على الطلب المقدم، تم إصدار هذه الشهادة الرسمية من واقع السجلات والدفاتر الصحية السنوية لقسم التطعيمات لتقديمها لمن يهمه الأمر دون أدنى مسؤولية على قسم الطب الوقائي.<br>
+                    </div>
+                    <div style="margin-top: 15px; font-weight: bold; font-size: 14px;">المراجعة: <span style="color: red;">${reviewDateFormatted}</span></div>
+                </div>
+                <div class="signatures-grid" style="direction: rtl;">
+                    <div><div class="signature-title">مسئول التطعيمات</div><div>د. نشوى الجزار</div></div>
+                    <div><div class="signature-title">مدير الطب الوقائي</div><div>${currentPreventiveManager}</div></div>
+                    <div><div class="signature-title">مدير الإدارة الصحية</div><div>${currentAdminManager}</div></div>
+                </div>
+            `;
+        }
+
+        // تحديث هيدر صفحة الإقرار الثاني أيضاً
+        document.getElementById('p2HeaderRight').innerHTML = `${currentAdmin}<br>قسم الطب الوقائي<br>قسم التطعيمات`;
+        document.getElementById('p2HeaderLeft').innerHTML = `${currentAdminEn}<br>Preventive Department`;
+        document.getElementById('p2FooterTitle').innerHTML = `قطاع الطب الوقائي - نظام الإقرارات والشهادات المطور رقمياً (${currentAdmin})`;
+
+        if (rec.relation === "صاحب الشهادة نفسه") {
+            document.getElementById('lbl_guardian').innerText = rec.nameAr; 
+            document.getElementById('lbl_relation').innerText = "نفسه";
+            document.getElementById('lbl_gender_txt2').innerText = rec.gender === "الطفلة" ? "المذكورة" : "المذكور";
+        } else {
+            document.getElementById('lbl_guardian').innerText = rec.guardian || '...........................................';
+            document.getElementById('lbl_relation').innerText = rec.relation;
+            document.getElementById('lbl_gender_txt2').innerText = rec.gender;
+        }
+
+        document.getElementById('lbl_name2').innerText = rec.nameAr; 
+        document.getElementById('previewModal').style.display = 'block';
+    }
+
+    function closePreviewModal() { document.getElementById('previewModal').style.display = 'none'; }
+    function executeSystemPrint() { window.print(); }
+</script>
+</body>
+</html>
